@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatting Application</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      h1 {
+        margin-top: 5px;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        align-items: center;
+      }
+      h1 {
+        margin-top: -50px;
+        margin-bottom: 10px;
+      }
+      div#messages {
+        border-radius: 10px;
+        padding: 10px;
+        position: relative;
+        width: 40%;
+        height: 80%;
+        background-image: url("https://i.pinimg.com/564x/0f/32/a9/0f32a9fe3b9972af0585b9bc8b6f4f73.jpg");
+        background-color: rgba(0, 0, 0, 0.154);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+      #message-panel {
+        height: 90%;
+        width: 100%;
+        overflow-x: auto;
+      }
+      #message-panel::-webkit-scrollbar {
+        width: 3px;
+      }
+
+      #input {
+        display: flex;
+        align-items: center;
+      }
+      input[type="text"] {
+        margin-top: 10px;
+        margin-left: 3px;
+        width: 80%;
+        height: 40px;
+        padding: 3px 5px;
+        border-radius: 10px 0 0 10px;
+        border: none;
+        font-size: larger;
+        background-color: rgba(245, 245, 245, 0.805);
+      }
+     
+      button {
+        margin-top: 10px;
+        display: inline-block;
+        height: 40px;
+        padding: 2px 10px;
+        font-weight: 700;
+        background-color: rgba(0, 0, 128, 0.111);
+        border: none;
+        border-radius: 0 10px 10px 0;
+      }
+      p {
+        padding: 5px 10px;
+        margin-bottom: 3px;
+        width: fit-content;
+        font-weight: 550;
+        border-radius: 10px;
+        border: none;
+      }
+
+      @media screen and (max-width: 1000px) {
+        div#messages {
+          width: 80%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Learning Web Socket</h1>
+
+    <div id="messages">
+      <div id="message-panel"></div>
+      <div id="input">
+        <input type="text" id="message" />
+        <button id="sendBtn">Send Message</button>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const inputMessage = document.getElementById("message");
+      const sendBtn = document.getElementById("sendBtn");
+      const messagePanel = document.getElementById("message-panel");
+
+      inputMessage.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          sendBtn.click();
+          this.value = "";
+        }
+      });
+      socket.on("send-to-everyone", (message) => {
+        const p = document.createElement("p");
+        p.innerText = message;
+        p.style.backgroundColor = "whitesmoke";
+
+        messagePanel.appendChild(p);
+        console.log("Message for everyone ", message);
+      });
+
+      sendBtn.addEventListener("click", (e) => {
+        const message = inputMessage.value;
+        const p = document.createElement("p");
+        p.innerText = message;
+        p.style.backgroundColor = "lightgreen";
+        // p.style.textAlign = 'right'
+        p.style.marginLeft = "auto";
+        p.style.marginRight = "0px";
+        messagePanel.appendChild(p);
+        socket.emit("user-message", message);
+      });
+    </script>
+  </body>
+</html>
